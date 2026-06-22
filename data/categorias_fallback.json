@@ -1,0 +1,11 @@
+﻿[
+  {"idCategoria": "1", "name": "Comida", "icon": "restaurant", "color": "#FF5733", "esPersonalizada": true, "estado": 1},
+  {"idCategoria": "2", "name": "Transporte", "icon": "directions_car", "color": "#3498DB", "esPersonalizada": true, "estado": 1},
+  {"idCategoria": "3", "name": "Salud", "icon": "local_hospital", "color": "#2ECC71", "esPersonalizada": false, "estado": 1},
+  {"idCategoria": "4", "name": "Entretenimiento", "icon": "movie", "color": "#9B59B6", "esPersonalizada": true, "estado": 1},
+  {"idCategoria": "5", "name": "Servicios", "icon": "build", "color": "#F39C12", "esPersonalizada": false, "estado": 1},
+  {"idCategoria": "6", "name": "Educación", "icon": "school", "color": "#1ABC9C", "esPersonalizada": false, "estado": 1},
+  {"idCategoria": "7", "name": "Ropa y Calzado", "icon": "checkroom", "color": "#E74C3C", "esPersonalizada": true, "estado": 1},
+  {"idCategoria": "8", "name": "Vivienda", "icon": "home", "color": "#34495E", "esPersonalizada": false, "estado": 1},
+  {"idCategoria": "9", "name": "Otros", "icon": "category", "color": "#95A5A6", "esPersonalizada": false, "estado": 1}
+]
