@@ -18,9 +18,6 @@ venv/
 *.swp
 *.swo
 
-# OCR / ML models (downloaded at runtime)
-data/category_embeddings.pkl
-models/
 
 # Test files
 test_*.png
