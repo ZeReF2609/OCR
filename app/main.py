@@ -7,6 +7,7 @@ from typing import List, Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.classifier.api_client import CategoriaAPIClient
 from app.classifier.categorizer import ProductCategorizer
@@ -24,6 +25,15 @@ app = FastAPI(
     title="OCR Finanzas360",
     description="API de OCR para facturas/boletas con clasificación automática en categorías",
     version="1.0.0",
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:4200",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 ocr_extractor: Optional[OCRExtractor] = None
