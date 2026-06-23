@@ -17,6 +17,7 @@ class Producto(BaseModel):
     precio_unitario: Optional[float] = None
     total: Optional[float] = None
     categoria: Optional[str] = None
+    categoria_id: Optional[str] = None
     confianza_categoria: Optional[float] = None
 
 

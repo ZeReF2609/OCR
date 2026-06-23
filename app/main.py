@@ -50,16 +50,18 @@ async def startup():
     except ImportError as e:
         print(f"WARNING: {e}")
         ocr_extractor = None
+
     pdf_processor = PDFProcessor(dpi=300)
-    try:
-        client = CategoriaAPIClient()
-        categorias_cache = client.listar_categorias()
-        categorizer = ProductCategorizer(
-            categorias_cache, cache_dir="data"
+
+    client = CategoriaAPIClient()
+    categorias_cache = client.listar_categorias()
+    if not categorias_cache:
+        raise RuntimeError(
+            "No se cargaron categorías desde el backend. Verifica CATEGORIAS_BACKEND_URL y la disponibilidad del servicio."
         )
-        print(f"Categorías cargadas: {len(categorias_cache)}")
-    except Exception as e:
-        print(f"WARNING: No se pudieron cargar categorías: {e}")
+
+    categorizer = ProductCategorizer(categorias_cache, cache_dir="data")
+    print(f"Categorías cargadas: {len(categorias_cache)}")
 
 
 @app.post("/ocr", response_model=OCRResponse)

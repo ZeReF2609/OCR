@@ -36,6 +36,7 @@ class ProductCategorizer:
             model_path or self.MODEL_NAME
         )
         self.category_names = [c.name for c in categorias]
+        self.category_ids = {c.name: c.idCategoria for c in categorias}
         self._build_category_embeddings()
 
     def _build_category_embeddings(self) -> None:
@@ -78,6 +79,7 @@ class ProductCategorizer:
         for p in productos:
             cat_name, conf = self.classify_product(p, threshold)
             p.categoria = cat_name
+            p.categoria_id = self.category_ids.get(cat_name)
             p.confianza_categoria = round(conf, 4)
         return productos
 

@@ -69,6 +69,7 @@ Ejemplo de respuesta:
         "precio_unitario": null,
         "total": 4.50,
         "categoria": "Comida",
+        "categoria_id": "1",
         "confianza_categoria": 0.82
       }
     ],
@@ -87,6 +88,11 @@ Ejemplo de respuesta:
   "tiempo_procesamiento_ms": 3450.12
 }
 ```
+
+> Cambios recientes:
+> - El endpoint `/ocr` ahora retorna `categoria_id` en cada producto clasificado.
+> - Las categorías se obtienen exclusivamente desde el backend configurado en `CATEGORIAS_BACKEND_URL`.
+> - Si la conexión al backend no está disponible, el servicio no arranca.
 
 ### Endpoint `/entrenar`
 
@@ -131,7 +137,17 @@ curl -X POST http://127.0.0.1:8000/entrenar \
 
 ## Categorías
 
-Usa la API pública de [Finanzas360](https://api.finanzas360.com) o el fallback local con 9 categorías:
+Usa la API de categorías de tu backend. Si el backend no responde, el servicio no podrá cargar categorías y fallará al iniciar.
+
+Configura la URL de backend en un archivo `.env` o en tu entorno:
+
+```env
+CATEGORIAS_BACKEND_URL=https://mi-backend.local/v1/categoria/publico/listar
+FINANZAS360_TOKEN=<token_opcional>
+CATEGORIAS_VERIFY_SSL=false
+```
+
+- `CATEGORIAS_VERIFY_SSL`: `true` o `false`. Útil cuando el backend usa certificado autofirmado.
 
 | Categoría | Icono |
 |-----------|-------|

@@ -1,6 +1,4 @@
-import json
 import os
-from pathlib import Path
 from typing import List, Optional
 
 import requests
@@ -12,41 +10,38 @@ load_dotenv()
 
 
 class CategoriaAPIClient:
-    """Cliente para la API pública de categorías de Finanzas360.
+    """Cliente para la API de categorías del backend."""
 
-    Si la API no está disponible, carga categorías desde el fallback local.
-    """
+    BASE_URL = os.getenv(
+        "CATEGORIAS_BACKEND_URL",
+        "https://localhost:7123/v1/categoria/publico/listar",
+    )
 
-    BASE_URL = "https://localhost:7123/v1/categoria/publico/listar"
-    FALLBACK_PATH = Path("data/categorias_fallback.json")
-
-    def __init__(self, token: Optional[str] = None):
+    def __init__(
+        self,
+        token: Optional[str] = None,
+        base_url: Optional[str] = None,
+        verify_ssl: Optional[bool] = None,
+    ):
         self.token = token or os.getenv("FINANZAS360_TOKEN")
+        self.base_url = base_url or self.BASE_URL
+        if verify_ssl is None:
+            raw_verify = os.getenv("CATEGORIAS_VERIFY_SSL", "true").strip().lower()
+            self.verify_ssl = raw_verify not in ("0", "false", "no")
+        else:
+            self.verify_ssl = verify_ssl
 
     def listar_categorias(self) -> List[Categoria]:
+        headers = {}
         if self.token:
-            try:
-                headers = {"Authorization": f"Bearer {self.token}"}
-                response = requests.get(
-                    self.BASE_URL, headers=headers, timeout=10
-                )
-                response.raise_for_status()
-                data = response.json()
-                return [Categoria(**item) for item in data]
-            except Exception as e:
-                print(f"API categorías no disponible ({e}), usando fallback local")
-        else:
-            print("Token no configurado, usando categorías fallback local")
+            headers["Authorization"] = f"Bearer {self.token}"
 
-        return self._load_fallback()
-
-    @staticmethod
-    def _load_fallback() -> List[Categoria]:
-        path = CategoriaAPIClient.FALLBACK_PATH
-        if not path.exists():
-            raise FileNotFoundError(
-                f"Fallback no encontrado: {path}"
-            )
-        with open(path, "r", encoding="utf-8-sig") as f:
-            data = json.load(f)
+        response = requests.get(
+            self.base_url,
+            headers=headers or None,
+            timeout=10,
+            verify=self.verify_ssl,
+        )
+        response.raise_for_status()
+        data = response.json()
         return [Categoria(**item) for item in data]
