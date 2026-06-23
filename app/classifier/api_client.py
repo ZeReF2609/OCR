@@ -17,7 +17,7 @@ class CategoriaAPIClient:
     Si la API no está disponible, carga categorías desde el fallback local.
     """
 
-    BASE_URL = "https://api.finanzas360.com/v1/categoria/publico/listar"
+    BASE_URL = "https://localhost:7123/v1/categoria/publico/listar"
     FALLBACK_PATH = Path("data/categorias_fallback.json")
 
     def __init__(self, token: Optional[str] = None):

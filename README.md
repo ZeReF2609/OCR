@@ -31,20 +31,29 @@ Servidor en `http://127.0.0.1:8000`
 
 ### Endpoints
 
-| Método | Path | Descripción |
-|--------|------|-------------|
-| `POST` | `/ocr` | Procesa imagen/PDF y clasifica productos |
-| `POST` | `/entrenar` | Fine-tuning supervisado del clasificador |
-| `GET` | `/categorias` | Lista categorías disponibles |
-| `GET` | `/health` | Estado del servicio |
+| Método | Path | Descripción | Parámetros |
+|--------|------|-------------|------------|
+| `POST` | `/ocr` | Procesa una imagen o PDF y clasifica productos | `file` (form file, requerido), `categoria_ids` (form string, opcional) |
+| `POST` | `/entrenar` | Fine-tuning supervisado del clasificador | JSON body `pairs` (lista de pares [producto, categoría], requerido) |
+| `GET` | `/categorias` | Lista categorías disponibles | Ninguno |
+| `GET` | `/health` | Estado del servicio | Ninguno |
 
-### Ejemplo `/ocr`
+### Endpoint `/ocr`
+
+- Método: `POST`
+- Content-Type: `multipart/form-data`
+- Parámetros:
+  - `file`: archivo de imagen (`jpg`, `png`, etc.) o PDF (`.pdf`). Requerido.
+  - `categoria_ids`: cadena opcional separada por comas con IDs de categoría a filtrar (por ejemplo `"cat1,cat2"`).
+
+Ejemplo de petición:
 
 ```bash
 curl -X POST -F "file=@factura.jpg" http://127.0.0.1:8000/ocr
 ```
 
-Respuesta:
+Ejemplo de respuesta:
+
 ```json
 {
   "documento": {
@@ -54,12 +63,55 @@ Respuesta:
     "fecha": "15/06/2026",
     "total_general": 150.00,
     "productos": [
-      {"nombre": "Arroz x kg", "total": 4.50, "categoria": "Comida", "confianza_categoria": 0.82}
-    ]
+      {
+        "nombre": "Arroz x kg",
+        "cantidad": null,
+        "precio_unitario": null,
+        "total": 4.50,
+        "categoria": "Comida",
+        "confianza_categoria": 0.82
+      }
+    ],
+    "texto_crudo": "..."
   },
+  "categorias_usadas": [
+    {
+      "idCategoria": "1",
+      "name": "Comida",
+      "icon": "restaurant",
+      "color": "#FF0000",
+      "esPersonalizada": false,
+      "estado": 1
+    }
+  ],
   "tiempo_procesamiento_ms": 3450.12
 }
 ```
+
+### Endpoint `/entrenar`
+
+- Método: `POST`
+- Content-Type: `application/json`
+- Body JSON:
+
+```json
+{
+  "pairs": [["Pan integral", "Comida"], ["Pasaje bus", "Transporte"]]
+}
+```
+
+- Parámetros:
+  - `pairs`: lista de pares `[[nombre_producto, nombre_categoria], ...]`. Requerido.
+
+### Endpoint `/categorias`
+
+- Método: `GET`
+- Response: lista de categorías disponibles.
+
+### Endpoint `/health`
+
+- Método: `GET`
+- Response: estado del servicio e información de carga.
 
 ## Entrenamiento supervisado
 
