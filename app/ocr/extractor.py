@@ -77,6 +77,7 @@ class OCRExtractor:
         doc.ruc = self._extract_ruc(texto)
         doc.fecha = self._extract_date(texto)
         doc.total_general = self._extract_total(texto)
+        doc.metodo_pago = self._extract_payment_method(lines)
         doc.productos = self._extract_products(lines)
 
     def _detect_tipo(self, texto: str) -> str:
@@ -122,6 +123,27 @@ class OCRExtractor:
                 val = self._parse_number(match.group(1))
                 if val is not None:
                     return val
+        return None
+
+    def _extract_payment_method(self, lines: List[str]) -> Optional[str]:
+        payment_patterns = [
+            r"metodo de pago[:]?\s*(.+)$",
+            r"forma de pago[:]?\s*(.+)$",
+            r"pag[oó] con[:]?\s*(.+)$",
+            r"tarjeta[:]?\s*(.+)$",
+            r"efectivo",
+            r"visa",
+            r"mastercard",
+            r"amex",
+            r"paypal",
+        ]
+        for line in lines:
+            for pat in payment_patterns:
+                match = re.search(pat, line, re.IGNORECASE)
+                if match:
+                    value = match.group(1).strip() if match.groups() else line.strip()
+                    if value:
+                        return value
         return None
 
     def _extract_products(self, lines: List[str]) -> List[Producto]:

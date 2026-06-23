@@ -62,6 +62,7 @@ Ejemplo de respuesta:
     "ruc": "12345678901",
     "fecha": "15/06/2026",
     "total_general": 150.00,
+    "metodo_pago": "Tarjeta Visa",
     "productos": [
       {
         "nombre": "Arroz x kg",
@@ -91,6 +92,8 @@ Ejemplo de respuesta:
 
 > Cambios recientes:
 > - El endpoint `/ocr` ahora retorna `categoria_id` en cada producto clasificado.
+> - Se agrega `metodo_pago` en el documento procesado cuando se detecta en el texto.
+> - El endpoint `/ocr` acepta imágenes y PDFs.
 > - Las categorías se obtienen exclusivamente desde el backend configurado en `CATEGORIAS_BACKEND_URL`.
 > - Si la conexión al backend no está disponible, el servicio no arranca.
 
@@ -145,9 +148,11 @@ Configura la URL de backend en un archivo `.env` o en tu entorno:
 CATEGORIAS_BACKEND_URL=https://mi-backend.local/v1/categoria/publico/listar
 FINANZAS360_TOKEN=<token_opcional>
 CATEGORIAS_VERIFY_SSL=false
+POPPLER_PATH=C:\\Program Files\\poppler-23.05.0\\Library\\bin
 ```
 
 - `CATEGORIAS_VERIFY_SSL`: `true` o `false`. Útil cuando el backend usa certificado autofirmado.
+- `POPPLER_PATH`: ruta a la carpeta `bin` de Poppler en Windows. Alternativamente, agrega `pdfinfo` al PATH del sistema.
 
 | Categoría | Icono |
 |-----------|-------|

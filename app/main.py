@@ -28,10 +28,8 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:4200",
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -78,25 +76,31 @@ async def procesar_documento(
     start = time.time()
     contenido = await file.read()
 
-    if file.filename and file.filename.lower().endswith(".pdf"):
-        images = pdf_processor.pdf_bytes_to_images(contenido)
-        doc = DocumentoProcesado(texto_crudo="")
-        for img in images:
-            page_doc = ocr_extractor.extract_document(img)
-            doc.texto_crudo += page_doc.texto_crudo + "\n"
-            if not doc.emisor:
-                doc.emisor = page_doc.emisor
-            if not doc.ruc:
-                doc.ruc = page_doc.ruc
-            if not doc.fecha:
-                doc.fecha = page_doc.fecha
-            if not doc.total_general:
-                doc.total_general = page_doc.total_general
-            doc.productos.extend(page_doc.productos)
-        doc.tipo_documento = doc.tipo_documento or "Documento PDF"
-    else:
-        image = _load_image(contenido)
-        doc = ocr_extractor.extract_document(image)
+    try:
+        if file.filename and file.filename.lower().endswith(".pdf"):
+            images = pdf_processor.pdf_bytes_to_images(contenido)
+            doc = DocumentoProcesado(texto_crudo="")
+            for img in images:
+                page_doc = ocr_extractor.extract_document(img)
+                doc.texto_crudo += page_doc.texto_crudo + "\n"
+                if not doc.emisor:
+                    doc.emisor = page_doc.emisor
+                if not doc.ruc:
+                    doc.ruc = page_doc.ruc
+                if not doc.fecha:
+                    doc.fecha = page_doc.fecha
+                if not doc.total_general:
+                    doc.total_general = page_doc.total_general
+                doc.productos.extend(page_doc.productos)
+            doc.tipo_documento = doc.tipo_documento or "Documento PDF"
+        else:
+            image = _load_image(contenido)
+            doc = ocr_extractor.extract_document(image)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error procesando archivo: {e}",
+        )
 
     categorias_usadas = categorias_cache
     if categorizer:

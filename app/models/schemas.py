@@ -27,6 +27,7 @@ class DocumentoProcesado(BaseModel):
     ruc: Optional[str] = None
     fecha: Optional[str] = None
     total_general: Optional[float] = None
+    metodo_pago: Optional[str] = None
     productos: List[Producto] = []
     texto_crudo: str = ""
 
