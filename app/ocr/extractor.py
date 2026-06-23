@@ -126,24 +126,18 @@ class OCRExtractor:
         return None
 
     def _extract_payment_method(self, lines: List[str]) -> Optional[str]:
-        payment_patterns = [
-            r"metodo de pago[:]?\s*(.+)$",
-            r"forma de pago[:]?\s*(.+)$",
-            r"pag[oó] con[:]?\s*(.+)$",
-            r"tarjeta[:]?\s*(.+)$",
-            r"efectivo",
-            r"visa",
-            r"mastercard",
-            r"amex",
-            r"paypal",
-        ]
+        """Extrae método de pago: efectivo, bcp, débito o yape."""
+        valid_methods = {"efectivo", "bcp", "débito", "debito", "yape"}
+        
         for line in lines:
-            for pat in payment_patterns:
-                match = re.search(pat, line, re.IGNORECASE)
-                if match:
-                    value = match.group(1).strip() if match.groups() else line.strip()
-                    if value:
-                        return value
+            line_lower = line.lower()
+            # Buscar métodos válidos directamente
+            for method in valid_methods:
+                if method in line_lower:
+                    # Normalizar: "débito" -> "débito", "debito" -> "débito"
+                    if method in ("débito", "debito"):
+                        return "BCP Débito"
+                    return method.capitalize()
         return None
 
     def _extract_products(self, lines: List[str]) -> List[Producto]:
