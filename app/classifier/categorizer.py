@@ -125,7 +125,7 @@ class ProductCategorizer:
             [label_to_idx[cat] for _, cat in filtered]
         )
 
-        clf = LogisticRegression(max_iter=1000, multi_class="multinomial")
+        clf = LogisticRegression(max_iter=1000)
         clf.fit(x_train, y_train)
 
         output_dir = Path(output_path)
